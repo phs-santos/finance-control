@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Glass Theme - Light Mode */
+    --background: 210 40% 98%;
+    --foreground: 215 25% 27%;
+
+    --card: 0 0% 100%; /* branco opaco */
+    --card-foreground: 215 25% 27%;
+
+    --popover: 0 0% 100% / 0.9;
+    --popover-foreground: 215 25% 27%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 142 76% 45%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 210 40% 95% / 0.6;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 280 100% 70%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 215 16% 85% / 0.3;
+    --input: 0 0% 100% / 0.6;
+    --ring: 262 83% 58%;
+
+    --radius: 1rem;
+
+    /* Financial App Specific Colors */
+    --income: 142 76% 45%;
+    --income-light: 142 76% 90% / 0.5;
+    --expense: 0 84% 60%;
+    --expense-light: 0 84% 95% / 0.5;
+    
+    /* Glass Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58% / 0.8), hsl(280 100% 70% / 0.6));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.25), hsl(210 40% 98% / 0.1));
+    --gradient-income: linear-gradient(135deg, hsl(142 76% 50% / 0.8), hsl(142 76% 45% / 0.6));
+    --gradient-expense: linear-gradient(135deg, hsl(0 84% 70% / 0.8), hsl(0 84% 60% / 0.6));
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.1), hsl(0 0% 100% / 0.05));
+    
+    /* Glass Shadows & Blur */
+    --shadow-elegant: 0 8px 32px 0 hsl(215 25% 27% / 0.1);
+    --shadow-card: 0 4px 16px 0 hsl(215 25% 27% / 0.05);
+    --shadow-button: 0 4px 16px 0 hsl(262 83% 58% / 0.2);
+    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.1);
+    --blur-glass: blur(16px);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glass: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Glass Theme - Dark Mode */
+    --background: 222 84% 4%;
+    --foreground: 210 40% 98%;
+
+    --card: 0 0% 8%;   /* quase preto opaco */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 0 0% 8% / 0.8;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 142 76% 45%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 217 33% 12% / 0.6;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 280 100% 70%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 217 33% 25% / 0.3;
+    --input: 0 0% 8% / 0.6;
+    --ring: 262 83% 58%;
+
+    --income: 142 76% 45%;
+    --income-light: 142 76% 20% / 0.5;
+    --expense: 0 84% 60%;
+    --expense-light: 0 84% 15% / 0.5;
+    
+    /* Glass Gradients - Dark */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58% / 0.8), hsl(280 100% 70% / 0.6));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8% / 0.25), hsl(222 84% 4% / 0.1));
+    --gradient-income: linear-gradient(135deg, hsl(142 76% 50% / 0.8), hsl(142 76% 45% / 0.6));
+    --gradient-expense: linear-gradient(135deg, hsl(0 84% 70% / 0.8), hsl(0 84% 60% / 0.6));
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.05), hsl(0 0% 100% / 0.02));
+    
+    /* Glass Shadows & Blur - Dark */
+    --shadow-elegant: 0 8px 32px 0 hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 16px 0 hsl(0 0% 0% / 0.2);
+    --shadow-button: 0 4px 16px 0 hsl(262 83% 58% / 0.3);
+    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.2);
+    --blur-glass: blur(16px);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  }
+}
+
+/* Glass Components */
+@layer components {
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .glass-card {
+    background: var(--gradient-card);
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-glass);
+  }
+  
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elegant);
+  }
+}
+
+/* Custom Scrollbar */
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background-clip: content-box;
+  }
+
+  /* Firefox scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.3);
+  }
+}
