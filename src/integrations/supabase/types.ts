@@ -136,6 +136,54 @@ export type Database = {
         }
         Relationships: []
       }
+      installment_plans: {
+        Row: {
+          category_id: string
+          completed_installments: number
+          created_at: string
+          description: string
+          id: string
+          installment_amount: number
+          installment_count: number
+          is_active: boolean
+          start_date: string
+          total_amount: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          completed_installments?: number
+          created_at?: string
+          description: string
+          id?: string
+          installment_amount: number
+          installment_count: number
+          is_active?: boolean
+          start_date: string
+          total_amount: number
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          completed_installments?: number
+          created_at?: string
+          description?: string
+          id?: string
+          installment_amount?: number
+          installment_count?: number
+          is_active?: boolean
+          start_date?: string
+          total_amount?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       module_configs: {
         Row: {
           created_at: string | null
@@ -196,6 +244,54 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_transactions: {
+        Row: {
+          amount: number
+          category_id: string
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          is_active: boolean
+          next_occurrence: string
+          recurring_type: string
+          start_date: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category_id: string
+          created_at?: string
+          description: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          next_occurrence: string
+          recurring_type: string
+          start_date: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          next_occurrence?: string
+          recurring_type?: string
+          start_date?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -204,6 +300,13 @@ export type Database = {
           date: string
           description: string
           id: string
+          installment_count: number | null
+          installment_number: number | null
+          is_installment: boolean | null
+          is_recurring: boolean | null
+          next_occurrence: string | null
+          parent_transaction_id: string | null
+          recurring_type: string | null
           type: string
           updated_at: string | null
           user_id: string
@@ -215,6 +318,13 @@ export type Database = {
           date: string
           description: string
           id?: string
+          installment_count?: number | null
+          installment_number?: number | null
+          is_installment?: boolean | null
+          is_recurring?: boolean | null
+          next_occurrence?: string | null
+          parent_transaction_id?: string | null
+          recurring_type?: string | null
           type: string
           updated_at?: string | null
           user_id: string
@@ -226,6 +336,13 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          installment_count?: number | null
+          installment_number?: number | null
+          is_installment?: boolean | null
+          is_recurring?: boolean | null
+          next_occurrence?: string | null
+          parent_transaction_id?: string | null
+          recurring_type?: string | null
           type?: string
           updated_at?: string | null
           user_id?: string

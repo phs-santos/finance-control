@@ -8,6 +8,47 @@ export interface Transaction {
   date: string;
   created_at?: string;
   updated_at?: string;
+  // Campos para transações recorrentes/parceladas
+  is_recurring?: boolean;
+  is_installment?: boolean;
+  installment_count?: number;
+  installment_number?: number;
+  parent_transaction_id?: string;
+  recurring_type?: 'weekly' | 'monthly' | 'yearly';
+  recurring_until?: string;
+  next_occurrence?: string;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  user_id?: string;
+  category_id: string;
+  type: 'income' | 'expense';
+  amount: number;
+  description: string;
+  recurring_type: 'weekly' | 'monthly' | 'yearly';
+  start_date: string;
+  end_date?: string;
+  next_occurrence: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface InstallmentPlan {
+  id: string;
+  user_id?: string;
+  category_id: string;
+  type: 'income' | 'expense';
+  total_amount: number;
+  description: string;
+  installment_count: number;
+  start_date: string;
+  installment_amount: number;
+  completed_installments: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Category {

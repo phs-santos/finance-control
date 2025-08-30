@@ -1,14 +1,4 @@
-import {
-    Home,
-    Plus,
-    BarChart3,
-    Settings,
-    Tag,
-    Target,
-    LogOut,
-    Users,
-} from "lucide-react";
-import { useState } from "react";
+import { Home, Plus, BarChart3, Settings, Tag, Target, LogOut, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useModuleStore } from "@/store/useModuleStore";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,13 +7,10 @@ interface NavigationProps {
     activeTab: string;
     onTabChange: (tab: string) => void;
     onAddTransaction: () => void;
+    onAddRecurringTransaction: () => void;
 }
 
-export const Navigation = ({
-    activeTab,
-    onTabChange,
-    onAddTransaction,
-}: NavigationProps) => {
+export const Navigation = ({ activeTab, onTabChange, onAddTransaction, onAddRecurringTransaction }: NavigationProps) => {
     const { signOut, isAdmin, user } = useAuth();
     const { getEnabled } = useModuleStore();
     const enabledModules = getEnabled();
@@ -33,20 +20,11 @@ export const Navigation = ({
         { id: "transactions", icon: BarChart3, label: "Histórico" },
         { id: "categories", icon: Tag, label: "Categorias" },
         { id: "goals", icon: Target, label: "Metas" },
-        { id: "settings", icon: Settings, label: "Config" },
     ];
 
     // Add admin-only tabs
-    const adminTabs = isAdmin
-        ? [{ id: "clients", icon: Users, label: "Clientes" }]
-        : [];
-
-    const tabs = [...baseTabs, ...adminTabs]; /*.filter(
-        (tab) =>
-            tab.id === "settings" ||
-            tab.id === "clients" ||
-            enabledModules.some((module) => module.id === tab.id)
-    ); */
+    const adminTabs = isAdmin ? [{ id: "clients", icon: Users, label: "Clientes" }] : [];
+    const tabs = [...baseTabs, ...adminTabs, { id: "settings", icon: Settings, label: "Config" }];
 
     return (
         <>
@@ -59,11 +37,10 @@ export const Navigation = ({
                             <button
                                 key={tab.id}
                                 onClick={() => onTabChange(tab.id)}
-                                className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-                                    activeTab === tab.id
-                                        ? "text-primary bg-primary/10"
-                                        : "text-muted-foreground hover:text-foreground"
-                                }`}
+                                className={`flex flex-col items-center p-2 rounded-lg transition-colors ${activeTab === tab.id
+                                    ? "text-primary bg-primary/10"
+                                    : "text-muted-foreground hover:text-foreground"
+                                    }`}
                             >
                                 <Icon className="h-5 w-5" />
                                 <span className="text-xs mt-1">
@@ -74,12 +51,11 @@ export const Navigation = ({
                     })}
 
                     {/* Floating Add Button */}
-                    <Button
-                        onClick={onAddTransaction}
-                        variant="gradient"
-                        size="icon"
-                        className="relative -top-4 rounded-full h-14 w-14 shadow-lg"
-                    >
+                    <Button onClick={onAddTransaction} variant="gradient" size="icon" className="relative -top-4 rounded-full h-14 w-14 shadow-lg">
+                        <Plus className="h-6 w-6" />
+                    </Button>
+
+                    <Button onClick={onAddRecurringTransaction} variant="gradient" size="icon" className="relative -top-4 rounded-full h-14 w-14 shadow-lg">
                         <Plus className="h-6 w-6" />
                     </Button>
                 </div>
@@ -113,11 +89,10 @@ export const Navigation = ({
                                     <button
                                         key={tab.id}
                                         onClick={() => onTabChange(tab.id)}
-                                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full text-left transition-colors ${
-                                            activeTab === tab.id
-                                                ? "bg-primary text-primary-foreground"
-                                                : "text-foreground hover:bg-accent hover:text-accent-foreground"
-                                        }`}
+                                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full text-left transition-colors ${activeTab === tab.id
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                                            }`}
                                     >
                                         <Icon className="mr-3 h-5 w-5" />
                                         {tab.label}
@@ -127,22 +102,17 @@ export const Navigation = ({
                         </nav>
 
                         <div className="p-4 space-y-2">
-                            <Button
-                                onClick={onAddTransaction}
-                                variant="gradient"
-                                className="w-full"
-                                size="lg"
-                            >
+                            <Button onClick={onAddTransaction} variant="gradient" className="w-full" size="lg">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Nova Transação
                             </Button>
 
-                            <Button
-                                onClick={signOut}
-                                variant="outline"
-                                className="w-full glass-button"
-                                size="sm"
-                            >
+                            <Button onClick={onAddRecurringTransaction} variant="gradient" className="w-full" size="lg">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Nova Transação Recorrente
+                            </Button>
+
+                            <Button onClick={signOut} variant="outline" className="w-full glass-button" size="sm">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Sair
                             </Button>
