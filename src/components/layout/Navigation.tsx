@@ -23,8 +23,8 @@ export const Navigation = ({ activeTab, onTabChange, onAddTransaction, onAddRecu
     ];
 
     // Add admin-only tabs
-    const adminTabs = isAdmin ? [{ id: "clients", icon: Users, label: "Clientes" }] : [];
-    const tabs = [...baseTabs, ...adminTabs, { id: "settings", icon: Settings, label: "Config" }];
+    /* const adminTabs = isAdmin ? [{ id: "clients", icon: Users, label: "Clientes" }] : []; */
+    const tabs = [...baseTabs, /*...adminTabs, { id: "settings", icon: Settings, label: "Config" } */];
 
     return (
         <>
