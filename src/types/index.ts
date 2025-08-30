@@ -31,6 +31,9 @@ export interface RecurringTransaction {
   end_date?: string;
   next_occurrence: string;
   is_active: boolean;
+  payment_method?: 'card' | 'pix' | 'bank_transfer' | 'cash' | 'other';
+  payment_date?: number;
+  notes?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -47,6 +50,9 @@ export interface InstallmentPlan {
   installment_amount: number;
   completed_installments: number;
   is_active: boolean;
+  payment_method?: 'card' | 'pix' | 'bank_transfer' | 'cash' | 'other';
+  payment_date?: number;
+  notes?: string;
   created_at?: string;
   updated_at?: string;
 }

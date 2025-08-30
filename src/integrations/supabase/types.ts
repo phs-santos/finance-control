@@ -146,6 +146,9 @@ export type Database = {
           installment_amount: number
           installment_count: number
           is_active: boolean
+          notes: string | null
+          payment_date: number | null
+          payment_method: string | null
           start_date: string
           total_amount: number
           type: string
@@ -161,6 +164,9 @@ export type Database = {
           installment_amount: number
           installment_count: number
           is_active?: boolean
+          notes?: string | null
+          payment_date?: number | null
+          payment_method?: string | null
           start_date: string
           total_amount: number
           type: string
@@ -176,6 +182,9 @@ export type Database = {
           installment_amount?: number
           installment_count?: number
           is_active?: boolean
+          notes?: string | null
+          payment_date?: number | null
+          payment_method?: string | null
           start_date?: string
           total_amount?: number
           type?: string
@@ -254,6 +263,9 @@ export type Database = {
           id: string
           is_active: boolean
           next_occurrence: string
+          notes: string | null
+          payment_date: number | null
+          payment_method: string | null
           recurring_type: string
           start_date: string
           type: string
@@ -269,6 +281,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           next_occurrence: string
+          notes?: string | null
+          payment_date?: number | null
+          payment_method?: string | null
           recurring_type: string
           start_date: string
           type: string
@@ -284,6 +299,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           next_occurrence?: string
+          notes?: string | null
+          payment_date?: number | null
+          payment_method?: string | null
           recurring_type?: string
           start_date?: string
           type?: string

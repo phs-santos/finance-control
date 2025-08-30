@@ -46,20 +46,20 @@ const Transactions = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Transações</h1>
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h1 className="text-xl md:text-2xl font-bold">Transações</h1>
         <div className="text-sm text-muted-foreground">
           {recentTransactions.length} transações
         </div>
       </div>
       
-      <div className="grid gap-6">
+      <div className="grid gap-4 md:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Histórico de Transações</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base md:text-lg">Histórico de Transações</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <TransactionList 
               transactions={recentTransactions}
               onEdit={handleEditTransaction}
@@ -69,10 +69,10 @@ const Transactions = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Transações Automáticas</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base md:text-lg">Transações Automáticas</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <RecurringTransactionList onUpdate={refreshData} />
           </CardContent>
         </Card>

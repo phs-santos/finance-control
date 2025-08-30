@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Repeat, Calendar } from 'lucide-react';
+import { Plus, X, Repeat, Calendar, CreditCard, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,9 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 	const [recurringFrequency, setRecurringFrequency] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
 	const [recurringStartDate, setRecurringStartDate] = useState(new Date().toISOString().split('T')[0]);
 	const [recurringEndDate, setRecurringEndDate] = useState('');
+	const [recurringPaymentMethod, setRecurringPaymentMethod] = useState<'card' | 'pix' | 'bank_transfer' | 'cash' | 'other'>('pix');
+	const [recurringPaymentDate, setRecurringPaymentDate] = useState('5');
+	const [recurringNotes, setRecurringNotes] = useState('');
 
 	// Estados para parcelamento
 	const [installmentType, setInstallmentType] = useState<'income' | 'expense'>('expense');
@@ -39,6 +42,9 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 	const [installmentCategory, setInstallmentCategory] = useState('');
 	const [installmentCount, setInstallmentCount] = useState('');
 	const [installmentStartDate, setInstallmentStartDate] = useState(new Date().toISOString().split('T')[0]);
+	const [installmentPaymentMethod, setInstallmentPaymentMethod] = useState<'card' | 'pix' | 'bank_transfer' | 'cash' | 'other'>('card');
+	const [installmentPaymentDate, setInstallmentPaymentDate] = useState('5');
+	const [installmentNotes, setInstallmentNotes] = useState('');
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -88,6 +94,9 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 				end_date: recurringEndDate || undefined,
 				next_occurrence: nextOccurrence.toISOString().split('T')[0],
 				is_active: true,
+				payment_method: recurringPaymentMethod,
+				payment_date: parseInt(recurringPaymentDate),
+				notes: recurringNotes || undefined,
 			});
 
 			toast({
@@ -143,6 +152,9 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 				installment_amount: 0, // Será calculado automaticamente
 				completed_installments: 0,
 				is_active: true,
+				payment_method: installmentPaymentMethod,
+				payment_date: parseInt(installmentPaymentDate),
+				notes: installmentNotes || undefined,
 			});
 
 			toast({
@@ -173,6 +185,9 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 		setRecurringFrequency('monthly');
 		setRecurringStartDate(new Date().toISOString().split('T')[0]);
 		setRecurringEndDate('');
+		setRecurringPaymentMethod('pix');
+		setRecurringPaymentDate('5');
+		setRecurringNotes('');
 
 		// Reset installment form
 		setInstallmentType('expense');
@@ -181,14 +196,17 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 		setInstallmentCategory('');
 		setInstallmentCount('');
 		setInstallmentStartDate(new Date().toISOString().split('T')[0]);
+		setInstallmentPaymentMethod('card');
+		setInstallmentPaymentDate('5');
+		setInstallmentNotes('');
 	};
 
 	if (!isOpen) return null;
 
 	return (
 		<div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-			<Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+			<Card className="w-full max-w-lg max-h-[95vh] overflow-y-auto">
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sticky top-0 bg-card z-10">
 					<CardTitle className="text-lg font-semibold">
 						Transações Automáticas
 					</CardTitle>
@@ -197,16 +215,18 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 					</Button>
 				</CardHeader>
 
-				<CardContent>
+				<CardContent className="p-4 md:p-6">
 					<Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'recurring' | 'installment')}>
-						<TabsList className="grid w-full grid-cols-2 mb-4">
-							<TabsTrigger value="recurring" className="flex items-center gap-2">
+						<TabsList className="grid w-full grid-cols-2 mb-4 h-auto p-1">
+							<TabsTrigger value="recurring" className="flex items-center gap-2 text-xs sm:text-sm p-2">
 								<Repeat className="h-4 w-4" />
-								Recorrente
+								<span className="hidden sm:inline">Recorrente</span>
+								<span className="sm:hidden">Recor.</span>
 							</TabsTrigger>
-							<TabsTrigger value="installment" className="flex items-center gap-2">
+							<TabsTrigger value="installment" className="flex items-center gap-2 text-xs sm:text-sm p-2">
 								<Calendar className="h-4 w-4" />
-								Parcelado
+								<span className="hidden sm:inline">Parcelado</span>
+								<span className="sm:hidden">Parc.</span>
 							</TabsTrigger>
 						</TabsList>
 
@@ -214,8 +234,8 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 							<form onSubmit={handleRecurringSubmit} className="space-y-4">
 								{/* Type Selection */}
 								<div className="space-y-2">
-									<Label>Tipo</Label>
-									<div className="flex gap-2">
+									<Label className="text-sm font-medium">Tipo</Label>
+									<div className="grid grid-cols-2 gap-2">
 										<Button
 											type="button"
 											variant={recurringType === 'income' ? 'income' : 'outline'}
@@ -224,7 +244,7 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 												setRecurringType('income');
 												setRecurringCategory('');
 											}}
-											className="flex-1"
+											className="h-10"
 										>
 											Receita
 										</Button>
@@ -236,7 +256,7 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 												setRecurringType('expense');
 												setRecurringCategory('');
 											}}
-											className="flex-1"
+											className="h-10"
 										>
 											Despesa
 										</Button>
@@ -328,18 +348,71 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 									/>
 								</div>
 
+								{/* Payment Information */}
+								<div className="space-y-4 p-4 bg-secondary/20 rounded-lg border border-border">
+									<div className="flex items-center gap-2">
+										<CreditCard className="h-4 w-4 text-primary" />
+										<Label className="text-sm font-medium">Informações de Pagamento</Label>
+									</div>
+									
+									{/* Payment Method */}
+									<div className="space-y-2">
+										<Label>Método de Pagamento</Label>
+										<Select value={recurringPaymentMethod} onValueChange={(value) => setRecurringPaymentMethod(value as any)}>
+											<SelectTrigger>
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="pix">PIX</SelectItem>
+												<SelectItem value="card">Cartão</SelectItem>
+												<SelectItem value="bank_transfer">Transferência Bancária</SelectItem>
+												<SelectItem value="cash">Dinheiro</SelectItem>
+												<SelectItem value="other">Outro</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Payment Date */}
+									<div className="space-y-2">
+										<Label htmlFor="recurring-payment-date">Dia do Pagamento</Label>
+										<Select value={recurringPaymentDate} onValueChange={setRecurringPaymentDate}>
+											<SelectTrigger>
+												<SelectValue placeholder="Dia do mês" />
+											</SelectTrigger>
+											<SelectContent>
+												{Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+													<SelectItem key={day} value={day.toString()}>
+														Dia {day}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Notes */}
+									<div className="space-y-2">
+										<Label htmlFor="recurring-notes">Observações (opcional)</Label>
+										<Textarea
+											id="recurring-notes"
+											placeholder="Ex: Débito automático, cartão terminado em 1234..."
+											value={recurringNotes}
+											onChange={(e) => setRecurringNotes(e.target.value)}
+											rows={2}
+										/>
+									</div>
+								</div>
+
 								{/* Actions */}
-								<div className="flex gap-2 pt-4">
-									<Button type="button" variant="outline" onClick={onClose} className="flex-1">
+								<div className="grid grid-cols-2 gap-3 pt-4">
+									<Button type="button" variant="outline" onClick={onClose}>
 										Cancelar
 									</Button>
 									<Button
 										type="submit"
 										variant="gradient"
 										disabled={isSubmitting}
-										className="flex-1"
 									>
-										{isSubmitting ? 'Criando...' : 'Criar Recorrente'}
+										{isSubmitting ? 'Criando...' : 'Criar'}
 									</Button>
 								</div>
 							</form>
@@ -349,8 +422,8 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 							<form onSubmit={handleInstallmentSubmit} className="space-y-4">
 								{/* Type Selection */}
 								<div className="space-y-2">
-									<Label>Tipo</Label>
-									<div className="flex gap-2">
+									<Label className="text-sm font-medium">Tipo</Label>
+									<div className="grid grid-cols-2 gap-2">
 										<Button
 											type="button"
 											variant={installmentType === 'income' ? 'income' : 'outline'}
@@ -359,7 +432,7 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 												setInstallmentType('income');
 												setInstallmentCategory('');
 											}}
-											className="flex-1"
+											className="h-10"
 										>
 											Receita
 										</Button>
@@ -371,7 +444,7 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 												setInstallmentType('expense');
 												setInstallmentCategory('');
 											}}
-											className="flex-1"
+											className="h-10"
 										>
 											Despesa
 										</Button>
@@ -456,18 +529,71 @@ export const RecurringTransactionForm = ({ isOpen, onClose, onSuccess }: Recurri
 									/>
 								</div>
 
+								{/* Payment Information */}
+								<div className="space-y-4 p-4 bg-secondary/20 rounded-lg border border-border">
+									<div className="flex items-center gap-2">
+										<CreditCard className="h-4 w-4 text-primary" />
+										<Label className="text-sm font-medium">Informações de Pagamento</Label>
+									</div>
+									
+									{/* Payment Method */}
+									<div className="space-y-2">
+										<Label>Método de Pagamento</Label>
+										<Select value={installmentPaymentMethod} onValueChange={(value) => setInstallmentPaymentMethod(value as any)}>
+											<SelectTrigger>
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="card">Cartão de Crédito</SelectItem>
+												<SelectItem value="pix">PIX</SelectItem>
+												<SelectItem value="bank_transfer">Financiamento</SelectItem>
+												<SelectItem value="cash">Dinheiro</SelectItem>
+												<SelectItem value="other">Outro</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Payment Date */}
+									<div className="space-y-2">
+										<Label htmlFor="installment-payment-date">Dia do Vencimento</Label>
+										<Select value={installmentPaymentDate} onValueChange={setInstallmentPaymentDate}>
+											<SelectTrigger>
+												<SelectValue placeholder="Dia do mês" />
+											</SelectTrigger>
+											<SelectContent>
+												{Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+													<SelectItem key={day} value={day.toString()}>
+														Dia {day}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Notes */}
+									<div className="space-y-2">
+										<Label htmlFor="installment-notes">Observações (opcional)</Label>
+										<Textarea
+											id="installment-notes"
+											placeholder="Ex: Cartão terminado em 1234, taxa de juros..."
+											value={installmentNotes}
+											onChange={(e) => setInstallmentNotes(e.target.value)}
+											rows={2}
+										/>
+									</div>
+								</div>
+
 								{/* Actions */}
-								<div className="flex gap-2 pt-4">
-									<Button type="button" variant="outline" onClick={onClose} className="flex-1">
+								<div className="grid grid-cols-2 gap-3 pt-4">
+									<Button type="button" variant="outline" onClick={onClose}>
 										Cancelar
 									</Button>
 									<Button
 										type="submit"
 										variant="gradient"
 										disabled={isSubmitting}
-										className="flex-1"
 									>
-										{isSubmitting ? 'Criando...' : 'Criar Parcelamento'}
+										{isSubmitting ? 'Criando...' : 'Criar'}
 									</Button>
 								</div>
 							</form>

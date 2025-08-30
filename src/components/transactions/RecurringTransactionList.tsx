@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit2, Trash2, Repeat, Calendar, Play, Pause } from 'lucide-react';
+import { Edit2, Trash2, Repeat, Calendar, Play, Pause, Plus, CreditCard, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { useRecurringTransactionStore } from '@/store/useRecurringTransactionSto
 import { useInstallmentPlanStore } from '@/store/useInstallmentPlanStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
 import { useTransactionStore } from '@/store/useTransactionStore';
+import { RecurringTransactionForm } from './RecurringTransactionForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -19,6 +20,7 @@ interface RecurringTransactionListProps {
 
 export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListProps) => {
   const [activeTab, setActiveTab] = useState<'recurring' | 'installment'>('recurring');
+  const [showForm, setShowForm] = useState(false);
 
   const { toast } = useToast();
   const { categories } = useCategoryStore();
@@ -69,6 +71,25 @@ export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListP
       yearly: 'Anual',
     };
     return labels[frequency as keyof typeof labels] || frequency;
+  };
+
+  const getPaymentMethodLabel = (method?: string) => {
+    switch (method) {
+      case 'card': return 'Cartão';
+      case 'pix': return 'PIX';
+      case 'bank_transfer': return 'Transferência';
+      case 'cash': return 'Dinheiro';
+      case 'other': return 'Outro';
+      default: return 'Não informado';
+    }
+  };
+
+  const getPaymentMethodIcon = (method?: string) => {
+    switch (method) {
+      case 'card': return <CreditCard className="h-3 w-3" />;
+      case 'pix': return <Calendar className="h-3 w-3" />;
+      default: return <CreditCard className="h-3 w-3" />;
+    }
   };
 
   const handleToggleRecurring = async (id: string, isActive: boolean) => {
@@ -148,33 +169,46 @@ export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListP
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Transações Automáticas</h3>
-        <Button 
-          onClick={processAutomaticTransactions}
-          variant="outline"
-          size="sm"
-        >
-          Processar Pendentes
-        </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h3 className="text-base md:text-lg font-semibold">Transações Automáticas</h3>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setShowForm(true)}
+            variant="gradient"
+            size="sm"
+            className="flex-1 sm:flex-none"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nova
+          </Button>
+          <Button 
+            onClick={processAutomaticTransactions}
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none"
+          >
+            Processar
+          </Button>
+        </div>
       </div>
 
-      <Alert>
+      <Alert className="text-sm">
         <AlertDescription>
-          As transações recorrentes e parcelas são processadas automaticamente. 
-          Use o botão "Processar Pendentes" para forçar o processamento.
+          As transações são processadas automaticamente. Use "Processar" para forçar.
         </AlertDescription>
       </Alert>
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'recurring' | 'installment')}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="recurring" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 h-auto p-1">
+          <TabsTrigger value="recurring" className="flex items-center gap-2 text-xs sm:text-sm p-2">
             <Repeat className="h-4 w-4" />
-            Recorrentes ({recurringTransactions.length})
+            <span className="hidden sm:inline">Recorrentes ({recurringTransactions.length})</span>
+            <span className="sm:hidden">Rec. ({recurringTransactions.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="installment" className="flex items-center gap-2">
+          <TabsTrigger value="installment" className="flex items-center gap-2 text-xs sm:text-sm p-2">
             <Calendar className="h-4 w-4" />
-            Parcelamentos ({installmentPlans.length})
+            <span className="hidden sm:inline">Parcelamentos ({installmentPlans.length})</span>
+            <span className="sm:hidden">Parc. ({installmentPlans.length})</span>
           </TabsTrigger>
         </TabsList>
 
@@ -190,50 +224,82 @@ export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListP
             </Card>
           ) : (
             recurringTransactions.map((recurring) => (
-              <Card key={recurring.id}>
-                <CardContent className="p-4">
+              <Card key={recurring.id} className="overflow-hidden">
+                <CardContent className="p-3 md:p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium">{recurring.description}</h4>
-                        <Badge variant={recurring.type === 'income' ? 'default' : 'destructive'}>
-                          {recurring.type === 'income' ? 'Receita' : 'Despesa'}
-                        </Badge>
-                        <Badge variant={recurring.is_active ? 'default' : 'secondary'}>
-                          {recurring.is_active ? 'Ativo' : 'Pausado'}
-                        </Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-medium text-sm truncate">{recurring.description}</h4>
+                        <div className="flex gap-1 flex-wrap">
+                          <Badge variant={recurring.type === 'income' ? 'default' : 'destructive'} className="text-xs">
+                            {recurring.type === 'income' ? 'Receita' : 'Despesa'}
+                          </Badge>
+                          <Badge variant={recurring.is_active ? 'default' : 'secondary'} className="text-xs">
+                            {recurring.is_active ? 'Ativo' : 'Pausado'}
+                          </Badge>
+                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">
                         {getCategoryName(recurring.category_id)}
                       </p>
-                      <p className="text-sm text-muted-foreground">
-                        {getFrequencyLabel(recurring.recurring_type)} • 
-                        Próxima: {formatDate(recurring.next_occurrence)}
-                        {recurring.end_date && ` • Até: ${formatDate(recurring.end_date)}`}
-                      </p>
+                       <p className="text-sm text-muted-foreground">
+                         {getFrequencyLabel(recurring.recurring_type)} • 
+                         Próxima: {formatDate(recurring.next_occurrence)}
+                         {recurring.end_date && ` • Até: ${formatDate(recurring.end_date)}`}
+                       </p>
+                       {(recurring.payment_method || recurring.payment_date || recurring.notes) && (
+                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                           {recurring.payment_method && (
+                             <div className="flex items-center gap-1">
+                               {getPaymentMethodIcon(recurring.payment_method)}
+                               <span>{getPaymentMethodLabel(recurring.payment_method)}</span>
+                             </div>
+                           )}
+                           {recurring.payment_date && (
+                             <div className="flex items-center gap-1">
+                               <Calendar className="h-3 w-3" />
+                               <span>Dia {recurring.payment_date}</span>
+                             </div>
+                           )}
+                           {recurring.notes && (
+                             <div className="flex items-center gap-1">
+                               <FileText className="h-3 w-3" />
+                               <span title={recurring.notes}>Obs.</span>
+                             </div>
+                           )}
+                         </div>
+                       )}
                     </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${recurring.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className="text-right ml-2 flex-shrink-0">
+                      <p className={`font-semibold text-sm ${recurring.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                         {recurring.type === 'income' ? '+' : '-'}{formatCurrency(recurring.amount)}
                       </p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2 mt-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleToggleRecurring(recurring.id, recurring.is_active)}
-                    >
-                      {recurring.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteRecurring(recurring.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                    <div className="flex gap-2 flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleToggleRecurring(recurring.id, recurring.is_active)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        {recurring.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        <span className="ml-1 hidden sm:inline">
+                          {recurring.is_active ? 'Pausar' : 'Ativar'}
+                        </span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteRecurring(recurring.id)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="ml-1 hidden sm:inline">Excluir</span>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -253,67 +319,100 @@ export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListP
             </Card>
           ) : (
             installmentPlans.map((plan) => (
-              <Card key={plan.id}>
-                <CardContent className="p-4">
+              <Card key={plan.id} className="overflow-hidden">
+                <CardContent className="p-3 md:p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium">{plan.description}</h4>
-                        <Badge variant={plan.type === 'income' ? 'default' : 'destructive'}>
-                          {plan.type === 'income' ? 'Receita' : 'Despesa'}
-                        </Badge>
-                        <Badge variant={plan.is_active ? 'default' : 'secondary'}>
-                          {plan.is_active ? 'Ativo' : 'Pausado'}
-                        </Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-medium text-sm truncate">{plan.description}</h4>
+                        <div className="flex gap-1 flex-wrap">
+                          <Badge variant={plan.type === 'income' ? 'default' : 'destructive'} className="text-xs">
+                            {plan.type === 'income' ? 'Receita' : 'Despesa'}
+                          </Badge>
+                          <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-xs">
+                            {plan.is_active ? 'Ativo' : 'Pausado'}
+                          </Badge>
+                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">
                         {getCategoryName(plan.category_id)}
                       </p>
-                      <p className="text-sm text-muted-foreground">
-                        {plan.completed_installments}/{plan.installment_count} parcelas • 
-                        {formatCurrency(plan.installment_amount)} cada • 
-                        Início: {formatDate(plan.start_date)}
-                      </p>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                       <p className="text-sm text-muted-foreground">
+                         {plan.completed_installments}/{plan.installment_count} parcelas • 
+                         {formatCurrency(plan.installment_amount)} cada • 
+                         Início: {formatDate(plan.start_date)}
+                       </p>
+                       {(plan.payment_method || plan.payment_date || plan.notes) && (
+                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                           {plan.payment_method && (
+                             <div className="flex items-center gap-1">
+                               {getPaymentMethodIcon(plan.payment_method)}
+                               <span>{getPaymentMethodLabel(plan.payment_method)}</span>
+                             </div>
+                           )}
+                           {plan.payment_date && (
+                             <div className="flex items-center gap-1">
+                               <Calendar className="h-3 w-3" />
+                               <span>Dia {plan.payment_date}</span>
+                             </div>
+                           )}
+                           {plan.notes && (
+                             <div className="flex items-center gap-1">
+                               <FileText className="h-3 w-3" />
+                               <span title={plan.notes}>Obs.</span>
+                             </div>
+                           )}
+                         </div>
+                       )}
+                      <div className="w-full bg-secondary/30 rounded-full h-2 mt-3">
                         <div 
-                          className="bg-gradient-to-r from-primary to-primary-glow h-2 rounded-full transition-all duration-300"
+                          className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-300"
                           style={{ 
                             width: `${(plan.completed_installments / plan.installment_count) * 100}%` 
                           }}
                         ></div>
                       </div>
                     </div>
-                    <div className="text-right ml-4">
-                      <p className={`font-semibold ${plan.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className="text-right ml-2 flex-shrink-0">
+                      <p className={`font-semibold text-sm ${plan.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                         {plan.type === 'income' ? '+' : '-'}{formatCurrency(plan.total_amount)}
                       </p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2 mt-3">
-                    {plan.is_active && plan.completed_installments < plan.installment_count && (
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                    <div className="flex gap-2 flex-1">
+                      {plan.is_active && plan.completed_installments < plan.installment_count && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleGenerateInstallment(plan.id)}
+                          className="flex-1 sm:flex-none"
+                        >
+                          Gerar Parcela
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleGenerateInstallment(plan.id)}
+                        onClick={() => handleToggleInstallment(plan.id, plan.is_active)}
+                        className="flex-1 sm:flex-none"
                       >
-                        Gerar Parcela
+                        {plan.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        <span className="ml-1 hidden sm:inline">
+                          {plan.is_active ? 'Pausar' : 'Ativar'}
+                        </span>
                       </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleToggleInstallment(plan.id, plan.is_active)}
-                    >
-                      {plan.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteInstallment(plan.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteInstallment(plan.id)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="ml-1 hidden sm:inline">Excluir</span>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -321,6 +420,16 @@ export const RecurringTransactionList = ({ onUpdate }: RecurringTransactionListP
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Form Modal */}
+      <RecurringTransactionForm 
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        onSuccess={() => {
+          setShowForm(false);
+          onUpdate();
+        }}
+      />
     </div>
   );
 };

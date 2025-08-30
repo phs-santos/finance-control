@@ -60,7 +60,7 @@ const Layout = () => {
 
 			{/* Main Content */}
 			<div className="md:ml-64 min-h-screen">
-				<main className="p-4 md:p-6 pb-20 md:pb-6">
+				<main className="px-4 py-2 md:p-6 pt-20 md:pt-6 pb-24 md:pb-6">
 					<Outlet />
 				</main>
 			</div>
